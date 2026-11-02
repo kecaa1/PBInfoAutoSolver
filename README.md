@@ -14,14 +14,14 @@ The app cannot generate answers until the backend is deployed and its HTTPS `/so
 Deploy the `backend/` directory as a Python web service:
 - Build command: `pip install -r requirements.txt`
 - Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-- Set environment variable `OPENAI_API_KEY` in the hosting provider's private environment settings.
-- Optional: set `OPENAI_MODEL` (defaults to `gpt-4.1-mini`).
+- Set environment variable `GEMINI_API_KEY` in the hosting provider's private environment settings.
+- Optional: set `GEMINI_MODEL` (defaults to `gemini-2.5-flash`).
 - Never put API keys or PBInfo passwords in the Android app or GitHub source.
 
-The backend uses the OpenAI API, which requires an API key and may incur usage charges. Ask a parent/guardian before setting up paid API access.
+Use a newly generated, private Gemini key only. The key previously pasted into chat must be revoked and must not be used.
 
 ## Current limitations
-- The AI backend must be deployed separately; it is not hosted by GitHub Actions.
+- The Gemini backend must be deployed separately; it is not hosted by GitHub Actions.
 - Generated answers can be wrong. Check the explanation, constraints, and tests.
 - No automatic PBInfo submission is performed. Submit only after reviewing the code.
 - This prototype does not compile or run hidden tests yet.
