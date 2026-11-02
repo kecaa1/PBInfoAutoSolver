@@ -1,14 +1,31 @@
-# PBInfo AutoSolver — Android starter
+# PBInfo AutoSolver
 
-This repository contains a minimal Android WebView starter app and a GitHub Actions workflow that builds a debug APK.
+Android client + FastAPI backend prototype.
 
-## Current functionality
-- Opens PBInfo inside the app.
-- Lets you enter a numeric problem ID and opens that problem page.
-- You sign in directly on PBInfo.
+## Android app
+- Sign in to PBInfo inside the app.
+- Enter a numeric problem ID and open its page.
+- Tap **Read problem and generate solution**. The app extracts visible page text and sends it to the configured HTTPS backend.
+- The app displays the returned C++ solution and explanation. Review and test before submitting manually.
 
-## Not implemented yet
-This is **not yet an AI solver**. It does not read/solve tasks with an AI model, compile/test C++ submissions, or submit code. Those features require a separately deployed, secured backend and further integration/testing. Do not add PBInfo passwords or AI API keys to this repository.
+## Backend setup required
+The app cannot generate answers until the backend is deployed and its HTTPS `/solve` URL is entered in the app.
 
-## Build
-Open the Actions tab, run **Build Android APK**, then download the artifact named `PBInfoAutoSolver-debug-apk` from the completed workflow run.
+Deploy the `backend/` directory as a Python web service:
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+- Set environment variable `OPENAI_API_KEY` in the hosting provider's private environment settings.
+- Optional: set `OPENAI_MODEL` (defaults to `gpt-4.1-mini`).
+- Never put API keys or PBInfo passwords in the Android app or GitHub source.
+
+The backend uses the OpenAI API, which requires an API key and may incur usage charges. Ask a parent/guardian before setting up paid API access.
+
+## Current limitations
+- The AI backend must be deployed separately; it is not hosted by GitHub Actions.
+- Generated answers can be wrong. Check the explanation, constraints, and tests.
+- No automatic PBInfo submission is performed. Submit only after reviewing the code.
+- This prototype does not compile or run hidden tests yet.
+- The app reads visible page text; if PBInfo changes its page layout or hides the statement, extraction may need adjustment.
+
+## Build APK
+Open Actions, run **Build Android APK**, and download `PBInfoAutoSolver-debug-apk` from the successful run's Artifacts section.
