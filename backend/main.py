@@ -47,7 +47,16 @@ Statement:
             "solution": answer,
             "explanation": "AI-generated answer. Verify it against the constraints and test cases before submitting."
         }
+    except requests.HTTPError as exc:
+        status = exc.response.status_code if exc.response is not None else 502
+        try:
+            error_data = exc.response.json() if exc.response is not None else {}
+            message = error_data.get("error", {}).get("message", "No error message returned")
+        except (ValueError, AttributeError):
+            message = (exc.response.text[:1000] if exc.response is not None else str(exc))
+        # Return Google's diagnostic without ever including the API key.
+        raise HTTPException(502, f"Gemini HTTP {status}: {message}") from exc
     except requests.RequestException as exc:
-        raise HTTPException(502, "Gemini API request failed") from exc
+        raise HTTPException(502, f"Could not reach Gemini: {type(exc).__name__}") from exc
     except (KeyError, IndexError, ValueError) as exc:
         raise HTTPException(502, "Gemini returned an unexpected response") from exc
