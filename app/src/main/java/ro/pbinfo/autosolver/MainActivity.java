@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
 
         backendUrl = new EditText(this);
         backendUrl.setSingleLine(true);
-        backendUrl.setText("https://YOUR-SERVER.example/solve");
+        backendUrl.setText("https://pbinfo-autosolver-api.onrender.com/solve");
         backendUrl.setHint("Your secure AI backend URL");
         root.addView(backendUrl);
 
@@ -98,7 +98,7 @@ public class MainActivity extends Activity {
         String id = problemId.getText().toString().trim();
         String endpoint = backendUrl.getText().toString().trim();
         if (!id.matches("[0-9]+")) { problemId.setError("Enter a numeric problem ID"); return; }
-        if (!endpoint.startsWith("https://") || endpoint.contains("YOUR-SERVER")) {
+        if (!endpoint.startsWith("https://")) {
             backendUrl.setError("Set your deployed HTTPS AI backend URL first");
             status.setText("The AI service has not been configured yet.");
             return;
