@@ -3,6 +3,7 @@ package ro.pbinfo.autosolver;
 import android.app.Activity;
 import android.os.Bundle;
 import android.graphics.Color;
+import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -73,10 +74,18 @@ public class MainActivity extends Activity {
         root.addView(resultScroll, new LinearLayout.LayoutParams(-1, 0, 1));
 
         webView = new WebView(this);
+        // Keep PBInfo login cookies between app launches. Passwords are never stored by this app.
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.addJavascriptInterface(new PageBridge(), "AndroidPage");
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override public void onPageFinished(WebView view, String url) {
+                CookieManager.getInstance().flush();
+                super.onPageFinished(view, url);
+            }
+        });
         root.addView(webView, new LinearLayout.LayoutParams(-1, 0, 2));
         setContentView(root);
         webView.loadUrl("https://www.pbinfo.ro/");
@@ -171,6 +180,11 @@ public class MainActivity extends Activity {
 
     private class PageBridge {
         @JavascriptInterface public void pageLoaded(String ignored) {}
+    }
+
+    @Override protected void onPause() {
+        if (webView != null) CookieManager.getInstance().flush();
+        super.onPause();
     }
 
     @Override public void onBackPressed() {
