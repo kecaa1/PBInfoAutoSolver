@@ -31,7 +31,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
-    private static final String BACKEND_URL = "https://pbinfo-autosolver-api.onrender.com/solve";
+    private static final String BACKEND_URL = "https://pbinfoautosolver2.onrender.com/solve";
     private static final int NAVY = Color.rgb(18, 25, 48);
     private static final int ACCENT = Color.rgb(91, 92, 240);
     private static final int PAGE = Color.rgb(244, 246, 251);
