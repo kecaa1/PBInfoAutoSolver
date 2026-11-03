@@ -4,9 +4,9 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI(title="PBInfo AutoSolver API")
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-MODEL = os.environ.get("OPENROUTER_MODEL", "openrouter/free")
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
 class SolveRequest(BaseModel):
@@ -16,8 +16,8 @@ class SolveRequest(BaseModel):
 
 @app.post("/solve")
 def solve(req: SolveRequest):
-    if not OPENROUTER_API_KEY:
-        raise HTTPException(503, "AI service is not configured: set OPENROUTER_API_KEY")
+    if not GROQ_API_KEY:
+        raise HTTPException(503, "AI service is not configured: set GROQ_API_KEY")
     if not req.statement.strip() or len(req.statement) > 30000:
         raise HTTPException(400, "Problem statement is empty or too long")
 
@@ -32,11 +32,10 @@ Statement:
 """
     try:
         response = requests.post(
-            OPENROUTER_URL,
+            GROQ_URL,
             headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Authorization": f"Bearer {GROQ_API_KEY}",
                 "Content-Type": "application/json",
-                "X-OpenRouter-Title": "PBInfo AutoSolver",
             },
             json={
                 "model": MODEL,
@@ -60,7 +59,7 @@ Statement:
             )
         answer = (answer or "").strip()
         if not answer:
-            raise ValueError("OpenRouter returned an empty response")
+            raise ValueError("Groq returned an empty response")
         return {
             "solution": answer,
             "explanation": "AI-generated answer. Verify it against the constraints and test cases before submitting.",
@@ -75,8 +74,8 @@ Statement:
                 message = str(message)
         except (ValueError, AttributeError):
             message = exc.response.text[:1000] if exc.response is not None else str(exc)
-        raise HTTPException(502, f"OpenRouter HTTP {status}: {message}") from exc
+        raise HTTPException(502, f"Groq HTTP {status}: {message}") from exc
     except requests.RequestException as exc:
-        raise HTTPException(502, f"Could not reach OpenRouter: {type(exc).__name__}") from exc
+        raise HTTPException(502, f"Could not reach Groq: {type(exc).__name__}") from exc
     except (KeyError, IndexError, TypeError, ValueError) as exc:
-        raise HTTPException(502, "OpenRouter returned an unexpected response") from exc
+        raise HTTPException(502, "Groq returned an unexpected response") from exc
